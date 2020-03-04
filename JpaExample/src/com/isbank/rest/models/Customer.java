@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,7 +17,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.SequenceGenerator;
@@ -24,6 +27,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
@@ -70,8 +74,15 @@ public class Customer {
 	@Embedded
 	private CustomerExtra customerExtra;
 	
-	@OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL )
+	@OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
 	private Address address;
+	
+	@Transient
+	private int dontWantToWrite;
+	
+	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	private List<Account> accounts;
 
 	public Customer() {
 	}
@@ -184,6 +195,22 @@ public class Customer {
 
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+
+	public int getDontWantToWrite() {
+		return dontWantToWrite;
+	}
+
+	public void setDontWantToWrite(int dontWantToWrite) {
+		this.dontWantToWrite = dontWantToWrite;
+	}
+
+	public List<Account> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(List<Account> accounts) {
+		this.accounts = accounts;
 	}
 
 }

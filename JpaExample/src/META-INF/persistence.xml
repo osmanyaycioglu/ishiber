@@ -2,6 +2,7 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="JpaExample" transaction-type="JTA">
 		<jta-data-source>java:jboss/datasources/mysqlDS</jta-data-source>
+		<class>com.isbank.rest.models.Account</class>
 		<class>com.isbank.rest.models.Customer</class>
 		<class>com.isbank.rest.models.CustomerExtra</class>
 		<properties>
