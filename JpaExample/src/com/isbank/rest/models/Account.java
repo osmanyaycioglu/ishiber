@@ -1,11 +1,15 @@
 package com.isbank.rest.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Account {
@@ -17,6 +21,10 @@ public class Account {
 	
 	@Enumerated(EnumType.STRING)
 	private EAccountType accountType;
+	
+	@ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL )
+	@JoinColumn(name = "custId",nullable = false)
+	private Customer customer;
 	
 	public double getBalance() {
 		return balance;
@@ -35,6 +43,12 @@ public class Account {
 	}
 	public void setAccId(long accId) {
 		this.accId = accId;
+	}
+	public Customer getCustomer() {
+		return customer;
+	}
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 	
 	

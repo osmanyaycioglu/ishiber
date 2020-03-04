@@ -81,7 +81,7 @@ public class Customer {
 	@Transient
 	private int dontWantToWrite;
 	
-	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy = "customer")
 	private List<Account> accounts;
 
 	public Customer() {

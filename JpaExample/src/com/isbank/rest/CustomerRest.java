@@ -12,7 +12,9 @@ import java.util.TimeZone;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -24,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.isbank.rest.models.Account;
 import com.isbank.rest.models.Address;
 import com.isbank.rest.models.Customer;
 import com.isbank.rest.models.Person;
@@ -37,15 +40,21 @@ public class CustomerRest {
 	@PersistenceContext(unitName = "JpaExample")
 	private EntityManager em;
 
+//	@PersistenceUnit(unitName = "JpaExample")
+//	private EntityManagerFactory emf;
+
 	@Path("/hello")
 	@GET
 	@Transactional
 	public String hello() {
+//		EntityManager createEntityManager = emf.createEntityManager();
 		Customer customer = new Customer();
 		customer.setName("osman");
 		customer.setSurname("yay");
 		customer.setAge(50);
 		em.persist(customer);
+//		createEntityManager.close();
+
 		return "hello world";
 	}
 
@@ -71,6 +80,10 @@ public class CustomerRest {
 	public String insert(List<Customer> customers) {
 		for (Customer customer : customers) {
 			customer.getAddress().setCustomer(customer);
+			List<Account> accounts = customer.getAccounts();
+			for (Account acc : accounts) {
+				acc.setCustomer(customer);
+			}
 			em.persist(customer);
 		}
 		return "Ok";
@@ -98,7 +111,7 @@ public class CustomerRest {
 	@Path("/findAll/{searchName}")
 	@GET
 	@Transactional
-	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public List<Customer> getAll(@PathParam("searchName") String xyz) {
 		TypedQuery<Customer> createQuery = em.createQuery("select c from Customer c where c.name = :isim",
 				Customer.class);
@@ -110,7 +123,7 @@ public class CustomerRest {
 	@Path("/getAll")
 	@GET
 	@Transactional
-	@Produces(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<Customer> getAll() {
 		TypedQuery<Customer> createQuery = em.createQuery("select c from Customer c", Customer.class);
 		List<Customer> resultList = createQuery.getResultList();
@@ -147,24 +160,76 @@ public class CustomerRest {
 	@Path("/getAllNative")
 	@GET
 	@Transactional
-	@Produces(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<Customer> getAllNative() {
 		Query createNativeQuery = em.createNativeQuery("select * from musteri", Customer.class);
 		List<Customer> resultList = createNativeQuery.getResultList();
 		return resultList;
 	}
 
+	@Path("/update")
+	@POST
+	@Transactional
+	public String update(Customer customer) {
+		Customer mergedCustomer = em.merge(customer);
+		return "Ok";
+	}
+
+	@Path("/update/{nn}/{ss}/{aa}")
+	@GET
+	@Transactional
+	public String update(@PathParam("nn") String name, @PathParam("ss") String surname, @PathParam("aa") int age) {
+		TypedQuery<Customer> createQuery = em
+				.createQuery("select c from Customer c where c.name = :isim and c.surname = :soy", Customer.class);
+		createQuery.setParameter("isim", name);
+		createQuery.setParameter("soy", surname);
+
+		Customer singleResult = createQuery.getSingleResult();
+		// em.clear();
+//		em.detach(singleResult);
+//		em.close();
+		// Customer mergedCustomer = em.merge(singleResult);
+		if (singleResult != null) {
+			singleResult.setAge(age);
+		}
+		return "Ok";
+	}
+
+	@Path("/update2/{nn}/{ss}/{aa}")
+	@GET
+	@Transactional
+	public String update2(@PathParam("nn") String name, @PathParam("ss") String surname, @PathParam("aa") int age) {
+		Query createQuery = em
+				.createQuery("update Customer c set c.age = :yas where c.name = :isim and c.surname = :soy");
+		createQuery.setParameter("isim", name);
+		createQuery.setParameter("soy", surname);
+		createQuery.setParameter("yas", age);
+		createQuery.executeUpdate();
+		return "Ok";
+	}
+	
+	@Path("/remove/{mid}")
+	@GET
+	@Transactional
+	public String remove(@PathParam("mid") long custId ) {
+		Customer customer = em.find(Customer.class, custId);
+		if (customer != null) {
+			em.remove(customer);
+		}
+		return "Ok";
+	}
+
+	@Path("/remove2/{mid}")
+	@GET
+	@Transactional
+	public String remove2(@PathParam("mid") long custId ) {
+		Query createQuery = em.createQuery("delete from Customer c where c.customerId = :cid");
+		createQuery.setParameter("cid", custId);
+		int executeUpdate = createQuery.executeUpdate();
+		return "Ok";
+	}
 
 }
-
-
-
-
-
-
-
-
-
 
 
 
