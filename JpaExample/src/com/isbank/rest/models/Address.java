@@ -52,6 +52,12 @@ public class Address {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
+	public long getAddId() {
+		return addId;
+	}
+	public void setAddId(long addId) {
+		this.addId = addId;
+	}
 	
 	
 	

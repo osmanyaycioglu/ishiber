@@ -171,6 +171,7 @@ public class CustomerRest {
 	@POST
 	@Transactional
 	public String update(Customer customer) {
+		customer.getAddress().setCustomer(customer);
 		Customer mergedCustomer = em.merge(customer);
 		return "Ok";
 	}
@@ -179,20 +180,31 @@ public class CustomerRest {
 	@GET
 	@Transactional
 	public String update(@PathParam("nn") String name, @PathParam("ss") String surname, @PathParam("aa") int age) {
-		TypedQuery<Customer> createQuery = em
-				.createQuery("select c from Customer c where c.name = :isim and c.surname = :soy", Customer.class);
-		createQuery.setParameter("isim", name);
-		createQuery.setParameter("soy", surname);
+		//em.getTransaction().begin();
+		try {
+			TypedQuery<Customer> createQuery = em
+					.createQuery("select c from Customer c where c.name = :isim and c.surname = :soy", Customer.class);
+			createQuery.setParameter("isim", name);
+			createQuery.setParameter("soy", surname);
 
-		Customer singleResult = createQuery.getSingleResult();
-		// em.clear();
-//		em.detach(singleResult);
-//		em.close();
-		// Customer mergedCustomer = em.merge(singleResult);
-		if (singleResult != null) {
-			singleResult.setAge(age);
+			Customer singleResult = createQuery.getSingleResult();
+			boolean managed = em.contains(singleResult);
+			// em.clear();
+//			em.detach(singleResult);
+//			em.close();
+			// Customer mergedCustomer = em.merge(singleResult);
+			if (singleResult != null) {
+				singleResult.setAge(age);
+			}
+			em.flush();
+			//em.getTransaction().commit();
+			return "Ok";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			//em.getTransaction().rollback();
 		}
-		return "Ok";
+		return "NOTOK";
 	}
 
 	@Path("/update2/{nn}/{ss}/{aa}")
