@@ -1,6 +1,8 @@
 package com.isbank.rest.converter;
 
-public class MyType {
+import java.io.Serializable;
+
+public class MyType implements Serializable {
 	private int high;
 	private int low;
 

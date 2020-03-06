@@ -7,8 +7,8 @@ public class MyValidator implements ConstraintValidator<MyAnnoValid, String>{
 	private int length;
 	
 	@Override
-	public void initialize(MyAnnoValid constraintAnnotation) {
-		length = constraintAnnotation.length();
+	public void initialize(MyAnnoValid abc) {
+		length = abc.length();
 	}
 
 	@Override

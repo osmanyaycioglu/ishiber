@@ -1,8 +1,10 @@
 package com.isbank.rest.models;
 
+import java.io.Serializable;
 import java.util.Base64;
 import java.util.UUID;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -19,6 +21,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -29,7 +32,12 @@ import com.isbank.rest.converter.MyConverter;
 import com.isbank.rest.converter.MyType;
 
 @Entity
-public class Person {
+// @Cacheable
+//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Person implements Serializable{
+	
+	private static final long serialVersionUID = -1175567013680466322L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long personId;
@@ -52,6 +60,9 @@ public class Person {
 
 	@Transient
 	private String tempSurname;
+	
+	@Version
+	private long cc;
 
 	public Person() {
 	}
@@ -132,6 +143,16 @@ public class Person {
 
 	public void setPersonId(long personId) {
 		this.personId = personId;
+	}
+
+
+	public long getCc() {
+		return cc;
+	}
+
+
+	public void setCc(long cc) {
+		this.cc = cc;
 	}
 
 

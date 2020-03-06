@@ -3,8 +3,11 @@
 	<persistence-unit name="JpaExample" transaction-type="JTA">
 		<jta-data-source>java:jboss/datasources/mysqlDS</jta-data-source>
 		<class>com.isbank.rest.models.Account</class>
+		<class>com.isbank.rest.models.Arac</class>
 		<class>com.isbank.rest.models.Customer</class>
 		<class>com.isbank.rest.models.CustomerExtra</class>
+		<class>com.isbank.rest.models.Kamyon</class>
+		<class>com.isbank.rest.models.Otomobil</class>
 		<class>com.isbank.rest.models.Project</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
