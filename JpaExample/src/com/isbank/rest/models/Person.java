@@ -24,6 +24,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import com.isbank.rest.constraint.MyAnnoValid;
 import com.isbank.rest.converter.MyConverter;
 import com.isbank.rest.converter.MyType;
 
@@ -37,7 +38,8 @@ public class Person {
 	@Size(min = 2,max = 50,message = "Isim 2 ile 50 arasýnda olmalý")
 	private String name;
 	
-	@Size(min = 3,max = 50,message = "Soy isim 3 ile 50 arasýnda olmalý")
+	// @Size(min = 3,max = 50,message = "Soy isim 3 ile 50 arasýnda olmalý")
+	@MyAnnoValid(length = 8,message = "8 den küçük olacak")
 	private String surname;
 	
 	
