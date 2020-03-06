@@ -5,6 +5,7 @@
 		<class>com.isbank.rest.models.Account</class>
 		<class>com.isbank.rest.models.Customer</class>
 		<class>com.isbank.rest.models.CustomerExtra</class>
+		<class>com.isbank.rest.models.Project</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

@@ -7,7 +7,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.enterprise.context.RequestScoped;
@@ -30,6 +32,7 @@ import com.isbank.rest.models.Account;
 import com.isbank.rest.models.Address;
 import com.isbank.rest.models.Customer;
 import com.isbank.rest.models.Person;
+import com.isbank.rest.models.Project;
 
 import sun.util.calendar.Gregorian;
 
@@ -180,7 +183,7 @@ public class CustomerRest {
 	@GET
 	@Transactional
 	public String update(@PathParam("nn") String name, @PathParam("ss") String surname, @PathParam("aa") int age) {
-		//em.getTransaction().begin();
+		// em.getTransaction().begin();
 		try {
 			TypedQuery<Customer> createQuery = em
 					.createQuery("select c from Customer c where c.name = :isim and c.surname = :soy", Customer.class);
@@ -197,12 +200,12 @@ public class CustomerRest {
 				singleResult.setAge(age);
 			}
 			em.flush();
-			//em.getTransaction().commit();
+			// em.getTransaction().commit();
 			return "Ok";
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			//em.getTransaction().rollback();
+			// em.getTransaction().rollback();
 		}
 		return "NOTOK";
 	}
@@ -219,11 +222,11 @@ public class CustomerRest {
 		createQuery.executeUpdate();
 		return "Ok";
 	}
-	
+
 	@Path("/remove/{mid}")
 	@GET
 	@Transactional
-	public String remove(@PathParam("mid") long custId ) {
+	public String remove(@PathParam("mid") long custId) {
 		Customer customer = em.find(Customer.class, custId);
 		if (customer != null) {
 			em.remove(customer);
@@ -234,16 +237,42 @@ public class CustomerRest {
 	@Path("/remove2/{mid}")
 	@GET
 	@Transactional
-	public String remove2(@PathParam("mid") long custId ) {
+	public String remove2(@PathParam("mid") long custId) {
 		Query createQuery = em.createQuery("delete from Customer c where c.customerId = :cid");
 		createQuery.setParameter("cid", custId);
 		int executeUpdate = createQuery.executeUpdate();
 		return "Ok";
 	}
 
+	@Path("/project/add/{cid}")
+	@POST
+	@Transactional
+	public String remove2(@PathParam("cid") long custId, Project project) {
+
+		Customer customer = em.find(Customer.class, custId);
+		if (customer != null) {
+			TypedQuery<Project> createQuery = em.createQuery("select p from Project p where p.name = :name",
+					Project.class);
+			createQuery.setParameter("name", project.getName());
+			Project projectFromDB = createQuery.getSingleResult();
+			if (projectFromDB == null) {
+				Set<Customer> customerSet = new HashSet<>();
+				customerSet.add(customer);
+				project.setCustomers(customerSet);
+				em.persist(project);
+			} else {
+				Set<Customer> customers = projectFromDB.getCustomers();
+				if (customers != null) {
+					customers.add(customer);
+				} else {
+					Set<Customer> customerSet = new HashSet<>();
+					customerSet.add(customer);
+					projectFromDB.setCustomers(customerSet);
+
+				}
+			}
+		}
+		return "Ok";
+	}
+
 }
-
-
-
-
-
